@@ -16,7 +16,15 @@ let test_eeascl = () => {
   check(hexp_typ, "same hexp", given, expected);
 };
 
+let test_eeascr = () => {
+  let ze: zexp = RAsc(Lam("f", Lit(1)), Cursor(Arrow(Num, Num)));
+  let given: hexp = erase_exp(ze);
+  let expected: hexp = Asc(Lam("f", Lit(1)), Arrow(Num, Num));
+  check(hexp_typ, "same hexp", given, expected);
+};
+
 let erase_exp_tests = [
   ("test_eetop", `Quick, test_eetop),
   ("test_etarrl", `Quick, test_eeascl),
+  ("test_etarrr", `Quick, test_eeascr),
 ];
