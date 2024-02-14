@@ -58,6 +58,13 @@ let test_eeplusr = () => {
   check(hexp_typ, "same hexp", given, expected);
 };
 
+let test_eenehole = () => {
+  let ze: zexp = NEHole(Cursor(Lam("f", Lit(1))));
+  let given: hexp = erase_exp(ze);
+  let expected: hexp = NEHole(Lam("f", Lit(1)));
+  check(hexp_typ, "same hexp", given, expected);
+};
+
 let erase_exp_tests = [
   ("test_eetop", `Quick, test_eetop),
   ("test_eeascl", `Quick, test_eeascl),
@@ -67,4 +74,5 @@ let erase_exp_tests = [
   ("test_eeapr", `Quick, test_eeapr),
   ("test_eeplusl", `Quick, test_eeplusl),
   ("test_eeplusr", `Quick, test_eeplusr),
+  ("test_eenehole", `Quick, test_eenehole),
 ];
