@@ -30,9 +30,25 @@ let test_eelam = () => {
   check(hexp_typ, "same hexp", given, expected);
 };
 
+let test_eeapl = () => {
+  let ze: zexp = LAp(Cursor(Lam("f", Lit(1))), Var("x"));
+  let given: hexp = erase_exp(ze);
+  let expected: hexp = Ap(Lam("f", Lit(1)), Var("x"));
+  check(hexp_typ, "same hexp", given, expected);
+};
+
+let test_eeapr = () => {
+  let ze: zexp = RAp(Lam("f", Lit(1)), Cursor(Var("x")));
+  let given: hexp = erase_exp(ze);
+  let expected: hexp = Ap(Lam("f", Lit(1)), Var("x"));
+  check(hexp_typ, "same hexp", given, expected);
+};
+
 let erase_exp_tests = [
   ("test_eetop", `Quick, test_eetop),
   ("test_eeascl", `Quick, test_eeascl),
   ("test_eeascr", `Quick, test_eeascr),
   ("test_eelam", `Quick, test_eelam),
+  ("test_eeapl", `Quick, test_eeapl),
+  ("test_eeapr", `Quick, test_eeapr),
 ];
