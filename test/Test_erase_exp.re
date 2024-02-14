@@ -44,6 +44,13 @@ let test_eeapr = () => {
   check(hexp_typ, "same hexp", given, expected);
 };
 
+let test_eeplusl = () => {
+  let ze: zexp = LPlus(Cursor(Var("x")), Var("y"));
+  let given: hexp = erase_exp(ze);
+  let expected: hexp = Plus(Var("x"), Var("y"));
+  check(hexp_typ, "same hexp", given, expected);
+};
+
 let erase_exp_tests = [
   ("test_eetop", `Quick, test_eetop),
   ("test_eeascl", `Quick, test_eeascl),
@@ -51,4 +58,5 @@ let erase_exp_tests = [
   ("test_eelam", `Quick, test_eelam),
   ("test_eeapl", `Quick, test_eeapl),
   ("test_eeapr", `Quick, test_eeapr),
+  ("test_eeplusl", `Quick, test_eeplusl),
 ];
