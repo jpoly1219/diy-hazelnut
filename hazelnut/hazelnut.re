@@ -4,77 +4,93 @@ open Sexplib.Std;
 let compare_string = String.compare;
 let compare_int = Int.compare;
 
-[@deriving (sexp, compare)]
-type htyp =
-  | Arrow(htyp, htyp)
-  | Num
-  | Hole;
+module Htyp = {
+  [@deriving (sexp, compare)]
+  type t =
+    | Arrow(t, t)
+    | Num
+    | Hole;
+};
 
-[@deriving (sexp, compare)]
-type hexp =
-  | Var(string)
-  | Lam(string, hexp)
-  | Ap(hexp, hexp)
-  | Lit(int)
-  | Plus(hexp, hexp)
-  | Asc(hexp, htyp)
-  | EHole
-  | NEHole(hexp);
+module Hexp = {
+  [@deriving (sexp, compare)]
+  type t =
+    | Var(string)
+    | Lam(string, t)
+    | Ap(t, t)
+    | Lit(int)
+    | Plus(t, t)
+    | Asc(t, Htyp.t)
+    | EHole
+    | NEHole(t);
+};
 
-[@deriving (sexp, compare)]
-type ztyp =
-  | Cursor(htyp)
-  | LArrow(ztyp, htyp)
-  | RArrow(htyp, ztyp);
+module Ztyp = {
+  [@deriving (sexp, compare)]
+  type t =
+    | Cursor(Htyp.t)
+    | LArrow(t, Htyp.t)
+    | RArrow(Htyp.t, t);
+};
 
-[@deriving (sexp, compare)]
-type zexp =
-  | Cursor(hexp)
-  | Lam(string, zexp)
-  | LAp(zexp, hexp)
-  | RAp(hexp, zexp)
-  | LPlus(zexp, hexp)
-  | RPlus(hexp, zexp)
-  | LAsc(zexp, htyp)
-  | RAsc(hexp, ztyp)
-  | NEHole(zexp);
+module Zexp = {
+  [@deriving (sexp, compare)]
+  type t =
+    | Cursor(Hexp.t)
+    | Lam(string, t)
+    | LAp(t, Hexp.t)
+    | RAp(Hexp.t, t)
+    | LPlus(t, Hexp.t)
+    | RPlus(Hexp.t, t)
+    | LAsc(t, Htyp.t)
+    | RAsc(Hexp.t, Ztyp.t)
+    | NEHole(t);
+};
 
-[@deriving (sexp, compare)]
-type child =
-  | One
-  | Two;
+module Child = {
+  [@deriving (sexp, compare)]
+  type t =
+    | One
+    | Two;
+};
 
-[@deriving (sexp, compare)]
-type dir =
-  | Child(child)
-  | Parent;
+module Dir = {
+  [@deriving (sexp, compare)]
+  type t =
+    | Child(Child.t)
+    | Parent;
+};
 
-[@deriving (sexp, compare)]
-type shape =
-  | Arrow
-  | Num
-  | Asc
-  | Var(string)
-  | Lam(string)
-  | Ap
-  | Lit(int)
-  | Plus
-  | NEHole;
+module Shape = {
+  [@deriving (sexp, compare)]
+  type t =
+    | Arrow
+    | Num
+    | Asc
+    | Var(string)
+    | Lam(string)
+    | Ap
+    | Lit(int)
+    | Plus
+    | NEHole;
+};
 
-[@deriving (sexp, compare)]
-type action =
-  | Move(dir)
-  | Construct(shape)
-  | Del
-  | Finish;
+module Action = {
+  [@deriving (sexp, compare)]
+  type t =
+    | Move(Dir.t)
+    | Construct(Shape.t)
+    | Del
+    | Finish;
+};
 
 module TypCtx = Map.Make(String);
-type typctx = TypCtx.t(htyp);
+type typctx = TypCtx.t(Htyp.t);
 
 exception Unimplemented;
 
 // helper
-let rec erase_typ = (t: ztyp): htyp => {
+let rec erase_typ = (t: Ztyp.t): Htyp.t => {
   switch (t) {
   | Cursor(ht1) => ht1
   | LArrow(zt1, ht1) => Arrow(erase_typ(zt1), ht1)
@@ -82,7 +98,7 @@ let rec erase_typ = (t: ztyp): htyp => {
   };
 };
 
-let rec erase_exp = (e: zexp): hexp => {
+let rec erase_exp = (e: Zexp.t): Hexp.t => {
   switch (e) {
   | Cursor(he1) => he1
   | Lam(str, ze1) => Lam(str, erase_exp(ze1))
@@ -97,7 +113,7 @@ let rec erase_exp = (e: zexp): hexp => {
 };
 
 // helper
-let rec consistent = (t1: htyp, t2: htyp): bool => {
+let rec consistent = (t1: Htyp.t, t2: Htyp.t): bool => {
   switch (t1) {
   | Arrow(t1Typ1, t1Typ2) =>
     switch (t2) {
@@ -117,7 +133,7 @@ let rec consistent = (t1: htyp, t2: htyp): bool => {
 };
 
 // helper
-let matchedArrow = (t: htyp): option(htyp) => {
+let matchedArrow = (t: Htyp.t): option(Htyp.t) => {
   switch (t) {
   | Arrow(ht1, ht2) => Some(Arrow(ht1, ht2))
   | Hole => Some(Arrow(Hole, Hole))
@@ -125,7 +141,7 @@ let matchedArrow = (t: htyp): option(htyp) => {
   };
 };
 
-let rec syn = (ctx: typctx, e: hexp): option(htyp) => {
+let rec syn = (ctx: typctx, e: Hexp.t): option(Htyp.t) => {
   switch (e) {
   | Var(str) =>
     if (TypCtx.mem(str, ctx)) {
@@ -173,7 +189,7 @@ let rec syn = (ctx: typctx, e: hexp): option(htyp) => {
   };
 }
 
-and ana = (ctx: typctx, e: hexp, t: htyp): bool => {
+and ana = (ctx: typctx, e: Hexp.t, t: Htyp.t): bool => {
   switch (e) {
   | Lam(str, e1) =>
     let tMatched = matchedArrow(t);
@@ -193,8 +209,8 @@ and ana = (ctx: typctx, e: hexp, t: htyp): bool => {
 };
 
 // helper for type actions
-let rec type_action = (t: ztyp, a: action): option(ztyp) => {
-  let type_action_zipper = (t: ztyp, a: action): option(ztyp) => {
+let rec type_action = (t: Ztyp.t, a: Action.t): option(Ztyp.t) => {
+  let type_action_zipper = (t: Ztyp.t, a: Action.t): option(Ztyp.t) => {
     switch (t) {
     | LArrow(zt1, ht1) =>
       let after = type_action(zt1, a);
@@ -253,7 +269,7 @@ let rec type_action = (t: ztyp, a: action): option(ztyp) => {
 };
 
 // helper for expression actions
-let exp_action = (e: zexp, a: action): option(zexp) => {
+let exp_action = (e: Zexp.t, a: Action.t): option(Zexp.t) => {
   switch (a) {
   | Move(d) =>
     switch (e) {
@@ -332,9 +348,11 @@ let exp_action = (e: zexp, a: action): option(zexp) => {
 };
 
 let rec syn_action =
-        (ctx: typctx, (e: zexp, t: htyp), a: action): option((zexp, htyp)) => {
+        (ctx: typctx, (e: Zexp.t, t: Htyp.t), a: Action.t)
+        : option((Zexp.t, Htyp.t)) => {
   let syn_action_zipper =
-      (ctx: typctx, (e: zexp, _: htyp), a: action): option((zexp, htyp)) => {
+      (ctx: typctx, (e: Zexp.t, _: Htyp.t), a: Action.t)
+      : option((Zexp.t, Htyp.t)) => {
     switch (e) {
     | LAsc(ze1, ht1) =>
       let ze2 = ana_action(ctx, ze1, a, ht1);
@@ -497,9 +515,10 @@ let rec syn_action =
   };
 }
 
-and ana_action = (ctx: typctx, e: zexp, a: action, t: htyp): option(zexp) => {
+and ana_action =
+    (ctx: typctx, e: Zexp.t, a: Action.t, t: Htyp.t): option(Zexp.t) => {
   let ana_action_subsumption =
-      (ctx: typctx, e: zexp, a: action, t: htyp): option(zexp) => {
+      (ctx: typctx, e: Zexp.t, a: Action.t, t: Htyp.t): option(Zexp.t) => {
     let ht1 = syn(ctx, erase_exp(e));
     switch (ht1) {
     | Some(ht) =>
@@ -518,7 +537,7 @@ and ana_action = (ctx: typctx, e: zexp, a: action, t: htyp): option(zexp) => {
   };
 
   let ana_action_zipper =
-      (ctx: typctx, e: zexp, a: action, t: htyp): option(zexp) => {
+      (ctx: typctx, e: Zexp.t, a: Action.t, t: Htyp.t): option(Zexp.t) => {
     switch (e) {
     | Lam(str, ze1) =>
       let tMatched = matchedArrow(t);
