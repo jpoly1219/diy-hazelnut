@@ -19,5 +19,6 @@ clean:
 deps:
 	opam install dune reason incr_dom ocaml-lsp-server alcotest
 
-test_impl:
+.PHONY: test
+test:
 	dune test
