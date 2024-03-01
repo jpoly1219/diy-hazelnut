@@ -5,26 +5,6 @@ module Hazelnut = Hazelnut_lib.Hazelnut;
 module TypCtx = Map.Make(String);
 type typctx = Hazelnut.TypCtx.t(Hazelnut.Htyp.t);
 
-/*
- let test_aasubsume_1 = () => {
-   let ctx: typctx = TypCtx.empty;
-   let ze: Hazelnut.Zexp.t = Cursor(Lam("f", Plus(Lit(1), Lit(2))));
-   let a: Hazelnut.Action.t = Move(Child(One));
-   let ht: Hazelnut.Htyp.t = Num;
-   let given: option(Hazelnut.Zexp.t) = Hazelnut.ana_action(ctx, ze, a, ht);
-   let expected: option(Hazelnut.Zexp.t) = Some(Lam("f", Cursor(Plus(Lit(1), Lit(2)))));
-   check(zexp_typ, "same Hazelnut.Zexp.t", given, expected);
- };
-
- let test_aasubsume_2 = () => {
-   let ctx: typctx = TypCtx.singleton("x", Hazelnut.Htyp.Num);
-   let ze: Hazelnut.Zexp.t = Cursor(EHole);
-   let given: Hazelnut.Hexp.t = Hazelnut.erase_exp(ze);
-   let expected: Hazelnut.Hexp.t = EHole;
-   check(hexp_typ, "same Hazelnut.Hexp.t", given, expected);
- };
-*/
-
 let test_aamove_1 = () => {
   let ctx: typctx = TypCtx.empty;
   let ze: Hazelnut.Zexp.t = Cursor(Lam("f", Plus(Lit(1), Lit(2))));
@@ -186,42 +166,28 @@ let test_aaconnumlit_2 = () => {
   let expected: option(Hazelnut.Zexp.t) = Some(Cursor(Lit(-1)));
   check(zexp_typ, "same Hazelnut.Zexp.t", given, expected);
 };
-/*
+
 let test_aafinish_1 = () => {
-  let ze: Hazelnut.Zexp.t = NEHole(Cursor(Lam("f", Lit(1))));
-  let given: Hazelnut.Hexp.t = Hazelnut.erase_exp(ze);
-  let expected: Hazelnut.Hexp.t = NEHole(Lam("f", Lit(1)));
-  check(hexp_typ, "same Hazelnut.Hexp.t", given, expected);
+  let ctx: typctx = TypCtx.empty
+  let ze: Hazelnut.Zexp.t = Cursor(NEHole(Plus(Lit(1), Lit(1))));
+  let a: Hazelnut.Action.t = Finish;
+  let ht: Hazelnut.Htyp.t = Num;
+  let given: option(Hazelnut.Zexp.t) = Hazelnut.ana_action(ctx, ze, a, ht);
+  let expected: option(Hazelnut.Zexp.t) = Some(Cursor(Plus(Lit(1), Lit(1))));
+  check(zexp_typ, "same Hazelnut.Zexp.t", given, expected);
 };
 
 let test_aafinish_2 = () => {
-  let ze: Hazelnut.Zexp.t =
-    NEHole(LAp(NEHole(Cursor(Var("f"))), Var("x")));
-  let given: Hazelnut.Hexp.t = Hazelnut.erase_exp(ze);
-  let expected: Hazelnut.Hexp.t = NEHole(Ap(NEHole(Var("f")), Var("x")));
-  check(hexp_typ, "same Hazelnut.Hexp.t", given, expected);
+  let ctx: typctx = TypCtx.singleton("x", Hazelnut.Htyp.Num)
+  let ze: Hazelnut.Zexp.t = Cursor(NEHole(NEHole(Lam("f", Plus(Var("x"), Var("x"))))));
+  let a: Hazelnut.Action.t = Finish;
+  let ht: Hazelnut.Htyp.t = Hole;
+  let given: option(Hazelnut.Zexp.t) = Hazelnut.ana_action(ctx, ze, a, ht);
+  let expected: option(Hazelnut.Zexp.t) = None;
+  check(zexp_typ, "same Hazelnut.Zexp.t", given, expected);
 };
 
-let test_aaziplam_1 = () => {
-  let ze: Hazelnut.Zexp.t = NEHole(Cursor(Lam("f", Lit(1))));
-  let given: Hazelnut.Hexp.t = Hazelnut.erase_exp(ze);
-  let expected: Hazelnut.Hexp.t = NEHole(Lam("f", Lit(1)));
-  check(hexp_typ, "same Hazelnut.Hexp.t", given, expected);
-};
-
-let test_aaziplam_2 = () => {
-  let ze: Hazelnut.Zexp.t =
-    NEHole(LAp(NEHole(Cursor(Var("f"))), Var("x")));
-  let given: Hazelnut.Hexp.t = Hazelnut.erase_exp(ze);
-  let expected: Hazelnut.Hexp.t = NEHole(Ap(NEHole(Var("f")), Var("x")));
-  check(hexp_typ, "same Hazelnut.Hexp.t", given, expected);
-};
-*/
 let ana_action_tests = [
-/*
-     ("test_aasubsume_1", `Quick, test_aasubsume_1),
-     ("test_aasubsume_2", `Quick, test_aasubsume_2),
-*/
   ("test_aamove_1", `Quick, test_aamove_1),
   ("test_aamove_2", `Quick, test_aamove_2),
   ("test_aamove_3", `Quick, test_aamove_3),
@@ -237,10 +203,6 @@ let ana_action_tests = [
   ("test_aaconlam2_2", `Quick, test_aaconlam2_2),
   ("test_aaconnumlit_1", `Quick, test_aaconnumlit_1),
   ("test_aaconnumlit_2", `Quick, test_aaconnumlit_2),
-/*
   ("test_aafinish_1", `Quick, test_aafinish_1),
-  ("test_aafinish_2", `Quick, test_aafinish_2),
-  ("test_aaziplam_2", `Quick, test_aaziplam_1),
-  ("test_aaziplam_2", `Quick, test_aaziplam_2),
-*/
+  ("test_aafinish_2", `Quick, test_aafinish_2)
 ];
