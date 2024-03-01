@@ -23,3 +23,18 @@ let htyp_print = (ht: option(Hazelnut.Htyp.t)): string =>
   };
 
 let htyp_typ = testable(Fmt.using(htyp_print, Fmt.string), htyp_eq);
+
+let zexp_eq = (ze1: option(Hazelnut.Zexp.t), ze2: option(Hazelnut.Zexp.t)): bool =>
+  switch (ze1, ze2) {
+  | (Some(e1), Some(e2)) => Hazelnut.Zexp.compare(e1, e2) == 0
+  | (None, None) => true
+  | _ => false
+  }
+
+let zexp_print = (ze: option(Hazelnut.Zexp.t)): string =>
+  switch (ze) {
+  | Some(_) => "zexp"
+  | _ => "None"
+  };
+
+let zexp_typ = testable(Fmt.using(zexp_print, Fmt.string), zexp_eq);
