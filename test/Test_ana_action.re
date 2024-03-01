@@ -97,23 +97,28 @@ let test_aaconasc_2 = () => {
   let expected: option(Hazelnut.Zexp.t) = Some(RAsc(Var("x"), Cursor(Arrow(Num, Num))));
   check(zexp_typ, "same Hazelnut.Zexp.t", given, expected);
 };
-/*
 
 let test_aaconvar_1 = () => {
-  let ze: Hazelnut.Zexp.t = LAp(Cursor(Lam("f", Lit(1))), Var("x"));
-  let given: Hazelnut.Hexp.t = Hazelnut.erase_exp(ze);
-  let expected: Hazelnut.Hexp.t = Ap(Lam("f", Lit(1)), Var("x"));
-  check(hexp_typ, "same Hazelnut.Hexp.t", given, expected);
+  let ctx: typctx = TypCtx.singleton("x", Hazelnut.Htyp.Arrow(Num, Num));
+  let ze: Hazelnut.Zexp.t = Cursor(EHole);
+  let a: Hazelnut.Action.t = Construct(Var("x"));
+  let ht: Hazelnut.Htyp.t = Num;
+  let given: option(Hazelnut.Zexp.t) = Hazelnut.ana_action(ctx, ze, a, ht);
+  let expected: option(Hazelnut.Zexp.t) = Some(NEHole(Cursor(Var("x"))));
+  check(zexp_typ, "same Hazelnut.Zexp.t", given, expected);
 };
 
 let test_aaconvar_2 = () => {
-  let ze: Hazelnut.Zexp.t =
-    LAp(Lam("f", Lam("g", Cursor(EHole))), Var("x"));
-  let given: Hazelnut.Hexp.t = Hazelnut.erase_exp(ze);
-  let expected: Hazelnut.Hexp.t = Ap(Lam("f", Lam("g", EHole)), Var("x"));
-  check(hexp_typ, "same Hazelnut.Hexp.t", given, expected);
+  let ctx: typctx = TypCtx.singleton("x", Hazelnut.Htyp.Num);
+  let ze: Hazelnut.Zexp.t = Cursor(EHole);
+  let a: Hazelnut.Action.t = Construct(Var("x"));
+  let ht: Hazelnut.Htyp.t = Num;
+  let given: option(Hazelnut.Zexp.t) = Hazelnut.ana_action(ctx, ze, a, ht);
+  let expected: option(Hazelnut.Zexp.t) = Some(Cursor(Var("x")));
+  check(zexp_typ, "same Hazelnut.Zexp.t", given, expected);
 };
 
+/*
 let test_aaconlam1_1 = () => {
   let ze: Hazelnut.Zexp.t = RAp(Lam("f", Lit(1)), Cursor(Var("x")));
   let given: Hazelnut.Hexp.t = Hazelnut.erase_exp(ze);
@@ -204,9 +209,9 @@ let ana_action_tests = [
   ("test_aadel_2", `Quick, test_aadel_2),
   ("test_aaconasc_1", `Quick, test_aaconasc_1),
   ("test_aaconasc_2", `Quick, test_aaconasc_2),
-  /*
   ("test_aaconvar_1", `Quick, test_aaconvar_1),
   ("test_aaconvar_2", `Quick, test_aaconvar_2),
+  /*
   ("test_aaconlam1_1", `Quick, test_aaconlam1_1),
   ("test_aaconlam1_2", `Quick, test_aaconlam1_2),
   ("test_aaconlam2_1", `Quick, test_aaconlam2_1),
