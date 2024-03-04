@@ -5,11 +5,7 @@ module Hazelnut = Hazelnut_lib.Hazelnut;
 module TypCtx = Map.Make(String);
 type typctx = Hazelnut.TypCtx.t(Hazelnut.Htyp.t);
 
-// let syn_action =
-//     (ctx: typctx, (e: Zexp.t, t: Htyp.t), a: Action.t)
-//     : option((Zexp.t, Htyp.t)) => {
-
-let test_sadel = () => {
+let test_sadel_1 = () => {
   let ctx: typctx = TypCtx.empty;
   let ze: Hazelnut.Zexp.t = Cursor(Lit(1));
   let t: Hazelnut.Htyp.t = Num;
@@ -20,20 +16,7 @@ let test_sadel = () => {
   check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
 };
 
-let test_safin = () => {
-  let ctx: typctx = TypCtx.empty;
-  let ze: Hazelnut.Zexp.t = Cursor(NEHole(Lit(1)));
-  let t: Hazelnut.Htyp.t = Hole;
-  let a: Hazelnut.Action.t = Finish; 
-  let given: option((Hazelnut.Zexp.t,Hazelnut.Htyp.t)) = Hazelnut.syn_action(ctx, (ze, t), a);
-  let expected: option((Hazelnut.Zexp.t,Hazelnut.Htyp.t)) =
-    Some((Cursor(Lit(1)), Num));
-  check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
-};
-
-// Construct rules
-
-let test_sacasc = () => {
+let test_saconasc_1 = () => {
   let ctx: typctx = TypCtx.empty;
   let ze: Hazelnut.Zexp.t = Cursor(Lit(1));
   let t: Hazelnut.Htyp.t = Num;
@@ -44,7 +27,7 @@ let test_sacasc = () => {
   check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
 };
 
-let test_sacvar = () => {
+let test_saconvar_1 = () => {
   let ctx: typctx = TypCtx.singleton("x", Hazelnut.Htyp.Num);
   let ze: Hazelnut.Zexp.t = Cursor(EHole);
   let t: Hazelnut.Htyp.t = Hole;
@@ -55,7 +38,7 @@ let test_sacvar = () => {
   check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
 };
 
-let test_saclam = () => {
+let test_saconlam_1 = () => {
   let ctx: typctx = TypCtx.empty;
   let ze: Hazelnut.Zexp.t = Cursor(EHole);
   let t: Hazelnut.Htyp.t = Hole;
@@ -66,7 +49,7 @@ let test_saclam = () => {
   check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
 };
 
-let test_saclit = () => {
+let test_saconnumlit_1 = () => {
   let ctx: typctx = TypCtx.empty;
   let ze: Hazelnut.Zexp.t = Cursor(EHole);
   let t: Hazelnut.Htyp.t = Hole;
@@ -77,7 +60,7 @@ let test_saclit = () => {
   check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
 };
 
-let test_sacneh = () => {
+let test_saconnehole_1 = () => {
   let ctx: typctx = TypCtx.empty;
   let ze: Hazelnut.Zexp.t = Cursor(Lit(1));
   let t: Hazelnut.Htyp.t = Num;
@@ -88,7 +71,7 @@ let test_sacneh = () => {
   check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
 };
 
-let test_sacap1 = () => {
+let test_saconaparr_1 = () => {
   let ctx: typctx = TypCtx.empty;
   let ze: Hazelnut.Zexp.t = Cursor(Lam("x",EHole));
   let t: Hazelnut.Htyp.t = Arrow(Hole,Hole);
@@ -99,7 +82,7 @@ let test_sacap1 = () => {
   check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
 };
 
-let test_sacap2 = () => {
+let test_saconapotw_1 = () => {
   let ctx: typctx = TypCtx.empty;
   let ze: Hazelnut.Zexp.t = Cursor(Lit(1));
   let t: Hazelnut.Htyp.t = Num;
@@ -110,7 +93,7 @@ let test_sacap2 = () => {
   check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
 };
 
-let test_sacplus1 = () => {
+let test_saconplus1_1 = () => {
   let ctx: typctx = TypCtx.empty;
   let ze: Hazelnut.Zexp.t = Cursor(Lit(1));
   let t: Hazelnut.Htyp.t = Num;
@@ -121,7 +104,7 @@ let test_sacplus1 = () => {
   check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
 };
 
-let test_sacplus2 = () => {
+let test_saconplus2_1 = () => {
   let ctx: typctx = TypCtx.empty;
   let ze: Hazelnut.Zexp.t = Cursor(Lam("x",EHole));
   let t: Hazelnut.Htyp.t = Arrow(Hole,Hole);
@@ -132,15 +115,27 @@ let test_sacplus2 = () => {
   check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
 };
 
+let test_safinish_1 = () => {
+  let ctx: typctx = TypCtx.empty;
+  let ze: Hazelnut.Zexp.t = Cursor(NEHole(Lit(1)));
+  let t: Hazelnut.Htyp.t = Hole;
+  let a: Hazelnut.Action.t = Finish; 
+  let given: option((Hazelnut.Zexp.t,Hazelnut.Htyp.t)) = Hazelnut.syn_action(ctx, (ze, t), a);
+  let expected: option((Hazelnut.Zexp.t,Hazelnut.Htyp.t)) =
+    Some((Cursor(Lit(1)), Num));
+  check(zexp_htyp, "same option(Hazelnut.Zexp.t)", given, expected);
+};
+
 let syn_action_tests = [
-  ("test_sadel", `Quick, test_sadel),
-  ("test_safin", `Quick, test_safin),
-  ("test_sacasc", `Quick, test_sacasc),
-  ("test_sacvar", `Quick, test_sacvar),
-  ("test_saclam", `Quick, test_saclam),
-  ("test_saclit", `Quick, test_saclit),
-  ("test_sacneh", `Quick, test_sacneh),
-  ("test_sacap1", `Quick, test_sacap1),
-  ("test_sacap2", `Quick, test_sacap2),
-  ("test_sacplus2", `Quick, test_sacplus2),
+  ("test_sadel_1", `Quick, test_sadel_1),
+  ("test_safinish_1", `Quick, test_safinish_1),
+  ("test_saconasc_1", `Quick, test_saconasc_1),
+  ("test_saconvar_1", `Quick, test_saconvar_1),
+  ("test_saconlam_1", `Quick, test_saconlam_1),
+  ("test_saconnumlit_1", `Quick, test_saconnumlit_1),
+  ("test_saconnehole_1", `Quick, test_saconnehole_1),
+  ("test_saconaparr_1", `Quick, test_saconaparr_1),
+  ("test_saconapotw_1", `Quick, test_saconapotw_1),
+  ("test_saconplus1_1", `Quick, test_saconplus1_1),
+  ("test_saconplus2_1", `Quick, test_saconplus2_1),
 ];
